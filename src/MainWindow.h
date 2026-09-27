@@ -10,8 +10,19 @@ class MainWindow : public QMainWindow {
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+signals:
+    // We define custom C++ signals that other parts of our game can listen to
+    void logInRequested();
+    void registerRequested();
+    void exitRequested();
+
 private:
-    QStackedWidget *stackedWidget;
+
+    QLabel *m_titleLabel;
+    QPushButton *m_logInButton;
+    QPushButton *m_registerButton;
+    QPushButton *m_exitButton;
+    QVBoxLayout *m_mainLayout;
 };
 
 #endif // MAINWINDOW_H
