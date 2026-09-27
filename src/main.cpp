@@ -1,9 +1,15 @@
 #include <QApplication>
 #include "MainWindow.h"
+#include "src/domain/CampaignController.h"
+#include "src/database/DatabaseManager.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    if (!DatabaseManager::instance().initDatabase("campaign_data.db")) {
+        return -1;
+    }
 
     app.setStyleSheet(
         // Main Windows & Splitters
@@ -102,6 +108,8 @@ int main(int argc, char *argv[])
     );
 
     MainWindow window;
+    CampaignController controller(&window);
+    
     window.show();
 
     return app.exec();
