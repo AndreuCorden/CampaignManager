@@ -2,6 +2,7 @@
 #include <QToolBar>
 #include <QLabel>
 #include <QPushButton>
+#include <QSizePolicy>
 
 DashboardWindow::DashboardWindow(const QString &username, QWidget *parent)
     : QMainWindow(parent)
@@ -16,8 +17,23 @@ DashboardWindow::DashboardWindow(const QString &username, QWidget *parent)
     // 2. Add top header toolbar on the Window shell
     QToolBar *topBar = addToolBar("Navigation");
     topBar->setMovable(false);
-    
-    QLabel *userLabel = new QLabel("Logged in as: " + username + "  ", this);
+
+    // User Label on the left
+    QLabel *userLabel = new QLabel("Logged in as: " + username, this);
     userLabel->setStyleSheet("color: #D4AF37; font-weight: bold; margin-right: 12px;");
     topBar->addWidget(userLabel);
+
+    // 3. Expanding Spacer — pushes everything after it to the far right
+    QWidget *spacer = new QWidget(this);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    topBar->addWidget(spacer);
+
+    // 4. Log Out Button on the right
+    QPushButton *logoutBtn = new QPushButton("Log Out", this);
+    logoutBtn->setCursor(Qt::PointingHandCursor);
+    logoutBtn->setStyleSheet("margin-right: 2px; padding-top: 2px; padding-bottom: 5px;");
+    logoutBtn->setCursor(Qt::PointingHandCursor);
+
+    topBar->addWidget(logoutBtn);
+    connect(logoutBtn, &QPushButton::clicked, this, &DashboardWindow::logoutRequested);
 }

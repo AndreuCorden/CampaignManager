@@ -111,18 +111,11 @@ int main(int argc, char *argv[])
     MainWindow loginWindow;
     AuthController authController(&loginWindow);
 
-    DashboardWindow *dashboardWindow = nullptr;
-    DashboardController *dashboardController = nullptr;
-
     QObject::connect(&authController, &AuthController::authenticated, 
-        [&](int userId, const QString &username) {
-            loginWindow.hide();
-
-            dashboardWindow = new DashboardWindow(username);
-            dashboardController = new DashboardController(dashboardWindow, userId, username, dashboardWindow);
-
-            dashboardWindow->show();
-        });
+    [&](int userId, const QString &username) {
+        loginWindow.hide();
+        new DashboardController(userId, username);
+    });
 
     loginWindow.show();
 

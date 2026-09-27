@@ -12,6 +12,9 @@ public:
     // Accessor so DashboardController can talk directly to the inner widget
     DashboardWidget* dashboardWidget() const { return m_dashboardWidget; }
 
+signals:
+    void logoutRequested();
+
 private:
     DashboardWidget *m_dashboardWidget;
 };

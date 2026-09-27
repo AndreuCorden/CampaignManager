@@ -5,8 +5,8 @@
 WorldsWindow::WorldsWindow(const QString &username, QWidget *parent)
     : QMainWindow(parent)
 {
-    setWindowTitle("Campaign Manager - Worlds Shelf");
-    resize(1280, 720);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
+    showFullScreen();
 
     // Set central view
     m_worldsWidget = new WorldsWidget(this);

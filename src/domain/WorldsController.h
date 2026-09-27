@@ -2,14 +2,15 @@
 #define WORLDSCONTROLLER_H
 
 #include <QObject>
-#include "display/worldsDashboard/WorldsWindow.h"
+#include <QString>
+
+class WorldsWindow; // Forward declaration only
 
 class WorldsController : public QObject {
     Q_OBJECT
 
 public:
-    explicit WorldsController(WorldsWindow *window, int userId, const QString &username, QObject *parent = nullptr);
-    void refreshData();
+    explicit WorldsController(int userId, const QString &username, QObject *parent = nullptr);
 
 private slots:
     void handleBackToDashboard();
@@ -18,6 +19,8 @@ private slots:
     void handleReactivateWorld(int worldId);
 
 private:
+    void refreshData();
+
     WorldsWindow *m_window;
     int m_userId;
     QString m_username;
