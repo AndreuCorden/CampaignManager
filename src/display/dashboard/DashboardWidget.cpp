@@ -22,21 +22,21 @@ DashboardWidget::DashboardWidget(QWidget *parent) : QWidget(parent) {
     // Section 1: Worlds & Campaigns
     m_worldsCard = new HubCardWidget("Worlds & Campaigns", 
                                      "Shelf for campaign setting lore and wikis", 
-                                     "+ Create World", this);
+                                     this);
     m_worldsCard->setMetricText("4 Worlds");
     m_worldsCard->setRecentSnippet("Last edit: Eldoria • Timeline of the Second Age");
 
     // Section 2: Miscellaneous Ideas
     m_ideasCard = new HubCardWidget("Scratchpad", 
                                     "Unsorted ideas, plot hooks, and loose concepts", 
-                                    "+ New Idea", this);
+                                    this);
     m_ideasCard->setMetricText("12 Notes");
     m_ideasCard->setRecentSnippet("Last edit: Underwater Dungeon Puzzle Idea");
 
     // Section 3: Player Vault
     m_charactersCard = new HubCardWidget("My Characters", 
                                          "Tracker for PCs in external campaigns", 
-                                         "+ New Character", this);
+                                         this);
     m_charactersCard->setMetricText("3 Characters");
     m_charactersCard->setRecentSnippet("Last edit: Garrick (Lv 6 Paladin) • Curse of Strahd");
 

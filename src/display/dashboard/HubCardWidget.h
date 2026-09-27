@@ -12,8 +12,7 @@ class HubCardWidget : public QFrame {
 
 public:
     explicit HubCardWidget(const QString &title, 
-                          const QString &subtitle, 
-                          const QString &actionText, 
+                          const QString &subtitle,
                           QWidget *parent = nullptr);
 
     void setMetricText(const QString &metric);
@@ -22,7 +21,6 @@ public:
 
 signals:
     void cardClicked();
-    void actionButtonClicked();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -32,7 +30,6 @@ private:
     QLabel *m_subtitleLabel;
     QLabel *m_metricLabel;
     QLabel *m_snippetLabel;
-    QPushButton *m_actionButton;
 };
 
 #endif // HUBCARDWIDGET_H

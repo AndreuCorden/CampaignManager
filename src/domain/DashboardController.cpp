@@ -1,6 +1,7 @@
 // DashboardController.cpp
 #include "DashboardController.h"
 #include "database/DatabaseManager.h"
+#include "domain/WorldsController.h"
 #include <QDebug>
 
 DashboardController::DashboardController(DashboardWindow *window, int userId, const QString &username, QObject *parent)
@@ -28,8 +29,17 @@ void DashboardController::loadUserDashboard() {
 }
 
 void DashboardController::handleOpenWorlds() {
-    qDebug() << "Opening Worlds Section for user:" << m_userId;
-    // TODO: Transition to World List / Wiki view
+    // 1. Create the new Worlds Window
+    WorldsWindow *worldsWindow = new WorldsWindow(m_username);
+
+    // 2. Pass ownership to the new WorldsController
+    new WorldsController(worldsWindow, m_userId, m_username, worldsWindow);
+
+    // 3. Display the new window
+    worldsWindow->show();
+
+    // 4. Close and destroy the current Dashboard window
+    m_window->close();
 }
 
 void DashboardController::handleOpenIdeas() {

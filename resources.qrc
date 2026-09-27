@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Other resources -->
+        <file>src/database/campaign_data.db.sql</file>
+    </qresource>
+</RCC>

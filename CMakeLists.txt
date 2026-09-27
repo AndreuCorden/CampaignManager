@@ -21,6 +21,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql)
 # Source layout structured for Campaign Manager architecture
 set(SOURCES
     src/main.cpp
+    resources.qrc
     src/MainWindow.h
     src/MainWindow.cpp
     

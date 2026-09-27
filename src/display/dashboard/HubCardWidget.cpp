@@ -3,7 +3,6 @@
 
 HubCardWidget::HubCardWidget(const QString &title, 
                              const QString &subtitle, 
-                             const QString &actionText, 
                              QWidget *parent)
     : QFrame(parent)
 {
@@ -55,8 +54,6 @@ HubCardWidget::HubCardWidget(const QString &title,
     m_snippetLabel->setObjectName("cardSnippet");
     m_snippetLabel->setWordWrap(true);
 
-    m_actionButton = new QPushButton(actionText, this);
-
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(16, 16, 16, 16);
     layout->addWidget(m_titleLabel);
@@ -65,9 +62,6 @@ HubCardWidget::HubCardWidget(const QString &title,
     layout->addWidget(m_metricLabel);
     layout->addWidget(m_snippetLabel);
     layout->addStretch();
-    layout->addWidget(m_actionButton);
-
-    connect(m_actionButton, &QPushButton::clicked, this, &HubCardWidget::actionButtonClicked);
 }
 
 void HubCardWidget::setMetricText(const QString &metric) {

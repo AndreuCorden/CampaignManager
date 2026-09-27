@@ -1,5 +1,6 @@
 // DatabaseManager.cpp
 #include "DatabaseManager.h"
+#include <QFile>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
@@ -20,48 +21,43 @@ bool DatabaseManager::initDatabase(const QString &dbPath) {
         return false;
     }
 
-    QSqlQuery query;
+    // 1. Enable Foreign Keys in SQLite
+    QSqlQuery fkQuery(m_db);
+    fkQuery.exec("PRAGMA foreign_keys = ON;");
 
-    // Enable foreign keys in SQLite (disabled by default in SQLite)
-    query.exec("PRAGMA foreign_keys = ON;");
+    // 2. Open the SQL schema script file (Use ":/..." for Qt Resources)
+    QFile sqlFile(":/src/database/campaign_data.db.sql");
+    
+    if (!sqlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Failed to open schema file:" << sqlFile.errorString();
+        return false;
+    }
 
-    // 1. Users Table
-    query.exec("CREATE TABLE IF NOT EXISTS users ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "username TEXT UNIQUE NOT NULL, "
-               "password_hash TEXT NOT NULL"
-               ");");
+    // 3. Read entire file content
+    QString sqlContent = QString::fromUtf8(sqlFile.readAll());
+    sqlFile.close();
 
-    // 2. Worlds & Campaigns Shelf Table
-    query.exec("CREATE TABLE IF NOT EXISTS worlds ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "user_id INTEGER NOT NULL, "
-               "name TEXT NOT NULL, "
-               "description TEXT, "
-               "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, "
-               "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
-               ");");
+    // 4. Split the file into individual statements separated by semicolons
+    QStringList statements = sqlContent.split(';', Qt::SkipEmptyParts);
 
-    // 3. Scratchpad / Loose Ideas Table
-    query.exec("CREATE TABLE IF NOT EXISTS loose_ideas ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "user_id INTEGER NOT NULL, "
-               "title TEXT NOT NULL, "
-               "content TEXT, "
-               "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, "
-               "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
-               ");");
+    // 5. Execute each DDL statement
+    QSqlQuery query(m_db);
+    for (QString statement : statements) {
+        statement = statement.trimmed();
+        
+        // Skip empty lines or comment-only strings
+        if (statement.isEmpty()) {
+            continue;
+        }
 
-    // 4. External Player Characters Vault
-    query.exec("CREATE TABLE IF NOT EXISTS external_characters ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "user_id INTEGER NOT NULL, "
-               "character_name TEXT NOT NULL, "
-               "campaign_name TEXT, "
-               "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, "
-               "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
-               ");");
+        if (!query.exec(statement)) {
+            qDebug() << "Failed to execute SQL statement:" << query.lastError().text();
+            qDebug() << "Failed Query:" << statement;
+            return false;
+        }
+    }
 
+    qDebug() << "Database schema initialized successfully from SQL file.";
     return true;
 }
 
@@ -77,7 +73,7 @@ bool DatabaseManager::registerUser(const QString &username, const QString &passw
     return query.exec();
 }
 
-bool DatabaseManager::authenticateUser(const QString &username, const QString &password) {
+int DatabaseManager::authenticateUser(const QString &username, const QString &password) {
     QSqlQuery query;
     query.prepare("SELECT password_hash FROM users WHERE username = :user");
     query.bindValue(":user", username);
@@ -86,7 +82,7 @@ bool DatabaseManager::authenticateUser(const QString &username, const QString &p
         QString storedHash = query.value(0).toString();
         return storedHash == hashPassword(password);
     }
-    return false;
+    return -1;
 }
 
 int DatabaseManager::getWorldCount(int userId) {

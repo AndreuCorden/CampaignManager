@@ -20,11 +20,6 @@ signals:
     void openIdeasSectionRequested();
     void openCharactersSectionRequested();
 
-    // User clicked action button on card
-    void createWorldRequested();
-    void createIdeaRequested();
-    void createCharacterRequested();
-
 private:
     HubCardWidget *m_worldsCard;
     HubCardWidget *m_ideasCard;

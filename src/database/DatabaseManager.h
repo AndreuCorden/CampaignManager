@@ -11,7 +11,7 @@ public:
     bool initDatabase(const QString &dbPath = "campaign_data.db");
     
     bool registerUser(const QString &username, const QString &password);
-    bool authenticateUser(const QString &username, const QString &password);
+    int authenticateUser(const QString &username, const QString &password);
 
     int getWorldCount(int userId);
     int getIdeaCount(int userId);
