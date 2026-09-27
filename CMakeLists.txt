@@ -24,6 +24,14 @@ set(SOURCES
 
     src/MainWindow.h
     src/MainWindow.cpp
+    src/display/AuthDialog.h
+    src/display/AuthDialog.cpp
+    src/display/CustomMessageBox.h
+    src/display/CustomMessageBox.cpp
+    src/domain/CampaignController.h
+    src/domain/CampaignController.cpp
+    src/database/DatabaseManager.h
+    src/database/DatabaseManager.cpp
     )
 
 add_executable(CampaignManager ${SOURCES})

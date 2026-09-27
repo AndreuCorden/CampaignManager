@@ -1,7 +1,7 @@
 #include <QApplication>
 #include "MainWindow.h"
-#include "src/domain/CampaignController.h"
-#include "src/database/DatabaseManager.h"
+#include "domain/CampaignController.h"
+#include "database/DatabaseManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
     MainWindow window;
     CampaignController controller(&window);
-    
+
     window.show();
 
     return app.exec();

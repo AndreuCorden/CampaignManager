@@ -6,6 +6,7 @@
 #include <QPushButton>
 
 AuthDialog::AuthDialog(Mode mode, QWidget *parent) : QDialog(parent) {
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
     setWindowTitle(mode == Login ? "Log In" : "Register");
     resize(300, 180);
 
