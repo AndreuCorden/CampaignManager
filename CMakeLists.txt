@@ -21,15 +21,23 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql)
 # Source layout structured for Campaign Manager architecture
 set(SOURCES
     src/main.cpp
-
     src/MainWindow.h
     src/MainWindow.cpp
-    src/display/AuthDialog.h
-    src/display/AuthDialog.cpp
+    
+    src/display/dashboard/DashboardWidget.h
+    src/display/dashboard/DashboardWidget.cpp
+    src/display/dashboard/DashboardWindow.h
+    src/display/dashboard/DashboardWindow.cpp
+    src/display/dashboard/HubCardWidget.h
+    src/display/dashboard/HubCardWidget.cpp
+    src/display/login/AuthDialog.h
+    src/display/login/AuthDialog.cpp
     src/display/CustomMessageBox.h
     src/display/CustomMessageBox.cpp
-    src/domain/CampaignController.h
-    src/domain/CampaignController.cpp
+    src/domain/AuthController.h
+    src/domain/AuthController.cpp
+    src/domain/DashboardController.h
+    src/domain/DashboardController.cpp
     src/database/DatabaseManager.h
     src/database/DatabaseManager.cpp
     )

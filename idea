@@ -1,0 +1,12 @@
+Once the user has been authenticated a new window pops up with two screens.
+
+The way I want to divide the app is in two sections:
+Campaign(Worlds) section: This is the section that sorts the active campaigns. Each campaign has a history, important characters and events, a wiki, etc... This could also include multiple campaings happening in the same would. So best call this the worlds section.
+
+So, to repeat, this section, which we'll now call the worlds section, is basically like a shelf where each world is stored. Each one with it's own personal information, history, events, characters (pc and npc), etc....
+
+Then there's the miscelanious section, which would be the same but for loose ideas. Ideas that haven't been given to any specific world or campaign. This could include individual characters, story beats, or worlds that still haven't been played with.
+
+Finally, an extra section can be added for pc's the user has that belong to other people's campaigns. Even though they don't own the campaings they can still have something to keep track of their character with.
+
+How can I start by making the window that shows these three options. I think that just having three buttons for selecting each section is a bit boring. Would it display the most recently edited items? 

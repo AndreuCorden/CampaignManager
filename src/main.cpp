@@ -1,6 +1,7 @@
 #include <QApplication>
 #include "MainWindow.h"
-#include "domain/CampaignController.h"
+#include "domain/AuthController.h"
+#include "domain/DashboardController.h"
 #include "database/DatabaseManager.h"
 
 int main(int argc, char *argv[])
@@ -107,10 +108,23 @@ int main(int argc, char *argv[])
         "}"
     );
 
-    MainWindow window;
-    CampaignController controller(&window);
+    MainWindow loginWindow;
+    AuthController authController(&loginWindow);
 
-    window.show();
+    DashboardWindow *dashboardWindow = nullptr;
+    DashboardController *dashboardController = nullptr;
+
+    QObject::connect(&authController, &AuthController::authenticated, 
+        [&](int userId, const QString &username) {
+            loginWindow.hide();
+
+            dashboardWindow = new DashboardWindow(username);
+            dashboardController = new DashboardController(dashboardWindow, userId, username, dashboardWindow);
+
+            dashboardWindow->show();
+        });
+
+    loginWindow.show();
 
     return app.exec();
 }
