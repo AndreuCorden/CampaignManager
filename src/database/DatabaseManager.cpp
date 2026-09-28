@@ -1,5 +1,6 @@
 // DatabaseManager.cpp
 #include "DatabaseManager.h"
+#include <QFile>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
@@ -16,16 +17,48 @@ bool DatabaseManager::initDatabase(const QString &dbPath) {
     m_db.setDatabaseName(dbPath);
 
     if (!m_db.open()) {
-        qDebug() << "Database Error:" << m_db.lastError().text();
+        qDebug() << "Database connection failed:" << m_db.lastError().text();
         return false;
     }
 
-    QSqlQuery query;
-    return query.exec("CREATE TABLE IF NOT EXISTS users ("
-                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                      "username TEXT UNIQUE NOT NULL, "
-                      "password_hash TEXT NOT NULL"
-                      ");");
+    // 1. Enable Foreign Keys in SQLite
+    QSqlQuery fkQuery(m_db);
+    fkQuery.exec("PRAGMA foreign_keys = ON;");
+
+    // 2. Open the SQL schema script file (Use ":/..." for Qt Resources)
+    QFile sqlFile(":/src/database/campaign_data.db.sql");
+    
+    if (!sqlFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Failed to open schema file:" << sqlFile.errorString();
+        return false;
+    }
+
+    // 3. Read entire file content
+    QString sqlContent = QString::fromUtf8(sqlFile.readAll());
+    sqlFile.close();
+
+    // 4. Split the file into individual statements separated by semicolons
+    QStringList statements = sqlContent.split(';', Qt::SkipEmptyParts);
+
+    // 5. Execute each DDL statement
+    QSqlQuery query(m_db);
+    for (QString statement : statements) {
+        statement = statement.trimmed();
+        
+        // Skip empty lines or comment-only strings
+        if (statement.isEmpty()) {
+            continue;
+        }
+
+        if (!query.exec(statement)) {
+            qDebug() << "Failed to execute SQL statement:" << query.lastError().text();
+            qDebug() << "Failed Query:" << statement;
+            return false;
+        }
+    }
+
+    qDebug() << "Database schema initialized successfully from SQL file.";
+    return true;
 }
 
 static QString hashPassword(const QString &password) {
@@ -40,7 +73,7 @@ bool DatabaseManager::registerUser(const QString &username, const QString &passw
     return query.exec();
 }
 
-bool DatabaseManager::authenticateUser(const QString &username, const QString &password) {
+int DatabaseManager::authenticateUser(const QString &username, const QString &password) {
     QSqlQuery query;
     query.prepare("SELECT password_hash FROM users WHERE username = :user");
     query.bindValue(":user", username);
@@ -49,5 +82,38 @@ bool DatabaseManager::authenticateUser(const QString &username, const QString &p
         QString storedHash = query.value(0).toString();
         return storedHash == hashPassword(password);
     }
-    return false;
+    return -1;
+}
+
+int DatabaseManager::getWorldCount(int userId) {
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM worlds WHERE user_id = :uid");
+    query.bindValue(":uid", userId);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return 0;
+}
+
+int DatabaseManager::getIdeaCount(int userId) {
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM loose_ideas WHERE user_id = :uid");
+    query.bindValue(":uid", userId);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return 0;
+}
+
+int DatabaseManager::getCharacterCount(int userId) {
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM external_characters WHERE user_id = :uid");
+    query.bindValue(":uid", userId);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+    return 0;
 }

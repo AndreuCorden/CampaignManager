@@ -18,23 +18,15 @@ set(CMAKE_PREFIX_PATH "C:/Qt/6.11.1/mingw_64")
 # Included Sql component for local SQLite database integration
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql)
 
-# Source layout structured for Campaign Manager architecture
-set(SOURCES
-    src/main.cpp
+# Automatically scan 'src' and all subdirectories for C++ files
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+    "src/*.cpp"
+    "src/*.h"
+    "src/*.hpp"
+)
 
-    src/MainWindow.h
-    src/MainWindow.cpp
-    src/display/AuthDialog.h
-    src/display/AuthDialog.cpp
-    src/display/CustomMessageBox.h
-    src/display/CustomMessageBox.cpp
-    src/domain/CampaignController.h
-    src/domain/CampaignController.cpp
-    src/database/DatabaseManager.h
-    src/database/DatabaseManager.cpp
-    )
-
-add_executable(CampaignManager ${SOURCES})
+# Pass the auto-discovered sources and your root resources file
+add_executable(CampaignManager ${SOURCES} resources.qrc)
 
 target_link_libraries(CampaignManager PRIVATE 
     Qt6::Core 

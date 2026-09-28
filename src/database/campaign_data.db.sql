@@ -1,0 +1,44 @@
+BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "external_characters" (
+	"id"	INTEGER,
+	"user_id"	INTEGER NOT NULL,
+	"character_name"	TEXT NOT NULL,
+	"campaign_name"	TEXT,
+	"updated_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("user_id") REFERENCES "users"("id") ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS "loose_ideas" (
+	"id"	INTEGER,
+	"user_id"	INTEGER NOT NULL,
+	"title"	TEXT NOT NULL,
+	"content"	TEXT,
+	"updated_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("user_id") REFERENCES "users"("id") ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS "users" (
+	"id"	INTEGER,
+	"username"	TEXT NOT NULL UNIQUE,
+	"password_hash"	TEXT NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+CREATE TABLE IF NOT EXISTS "worlds" (
+	"id"	INTEGER,
+	"user_id"	INTEGER NOT NULL,
+	"name"	TEXT NOT NULL,
+	"description"	TEXT,
+	"is_archived" INTEGER DEFAULT 0,
+	"updated_at"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("user_id") REFERENCES "users"("id") ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS campaigns (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "world_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "updated_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(world_id) REFERENCES worlds(id) ON DELETE CASCADE
+);
+COMMIT;
