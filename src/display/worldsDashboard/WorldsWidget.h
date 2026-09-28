@@ -6,6 +6,8 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
+#include "database/world.h"
+
 class WorldsWidget : public QWidget {
     Q_OBJECT
 
@@ -13,9 +15,9 @@ public:
     explicit WorldsWidget(QWidget *parent = nullptr);
 
     // Dynamic UI population methods called by WorldsController
-    void populateActiveWorlds(const QList<QPair<int, QString>> &worlds);
+    void populateActiveWorlds(const QList<World> &worlds);
     void populateTopCampaigns(const QList<QPair<int, QString>> &campaigns); // <campaignId, "Campaign Name (World Name)">
-    void populateClosedWorlds(const QList<QPair<int, QString>> &closedWorlds);
+    void populateClosedWorlds(const QList<World> &worlds);
 
 signals:
     void backToDashboardRequested();

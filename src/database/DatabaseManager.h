@@ -5,6 +5,8 @@
 #include <QString>
 #include <QSqlDatabase>
 
+#include "world.h"
+
 class DatabaseManager {
 public:
     static DatabaseManager& instance();
@@ -16,6 +18,9 @@ public:
     int getWorldCount(int userId);
     int getIdeaCount(int userId);
     int getCharacterCount(int userId);
+
+    QList<World> getWorldsForUser(int userId, bool isArchived = false);
+    int createWorld(int userId, const QString &name, const QString &description);
 
 private:
     DatabaseManager() = default;

@@ -7,6 +7,8 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
+#include <iostream>
+
 DatabaseManager& DatabaseManager::instance() {
     static DatabaseManager instance;
     return instance;
@@ -75,14 +77,20 @@ bool DatabaseManager::registerUser(const QString &username, const QString &passw
 
 int DatabaseManager::authenticateUser(const QString &username, const QString &password) {
     QSqlQuery query;
-    query.prepare("SELECT password_hash FROM users WHERE username = :user");
+    // 1. Select both 'id' and 'password_hash'
+    query.prepare("SELECT id, password_hash FROM users WHERE username = :user");
     query.bindValue(":user", username);
     
     if (query.exec() && query.next()) {
-        QString storedHash = query.value(0).toString();
-        return storedHash == hashPassword(password);
+        int userId = query.value(0).toInt();
+        QString storedHash = query.value(1).toString();
+        
+        // 2. Validate password, then return the actual database user ID
+        if (storedHash == hashPassword(password)) {
+            return userId; 
+        }
     }
-    return -1;
+    return -1; // Login failed
 }
 
 int DatabaseManager::getWorldCount(int userId) {
@@ -116,4 +124,47 @@ int DatabaseManager::getCharacterCount(int userId) {
         return query.value(0).toInt();
     }
     return 0;
+}
+
+QList<World> DatabaseManager::getWorldsForUser(int userId, bool isArchived) {
+    QList<World> worlds;
+    QSqlQuery query;
+    
+    query.prepare("SELECT id, name, description, is_archived "
+                  "FROM worlds "
+                  "WHERE user_id = :uid AND COALESCE(is_archived, 0) = :archived "
+                  "ORDER BY updated_at DESC");
+                  
+    query.bindValue(":uid", userId);
+    query.bindValue(":archived", isArchived ? 1 : 0);
+
+    if (query.exec()) {
+        while (query.next()) {
+            worlds.append(World(
+                query.value("id").toInt(),
+                query.value("name").toString(),
+                query.value("description").toString(),
+                query.value("is_archived").toBool()
+            ));
+        }
+    } else {
+        qDebug() << "Failed to fetch worlds for user:" << query.lastError().text();
+    }
+
+    return worlds;
+}
+
+int DatabaseManager::createWorld(int userId, const QString &name, const QString &description) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO worlds (user_id, name, description) VALUES (:uid, :name, :desc)");
+    query.bindValue(":uid", userId);
+    query.bindValue(":name", name);
+    query.bindValue(":desc", description);
+
+    if (query.exec()) {
+        return query.lastInsertId().toInt();
+    }
+    
+    qDebug() << "Failed to create world:" << query.lastError().text();
+    return -1;
 }
