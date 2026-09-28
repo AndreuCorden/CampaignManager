@@ -15,9 +15,11 @@ public:
 private slots:
     void handleBackToDashboard();
     void handleOpenWorld(int worldId);
+    void handleArchiveWorld(int worldId);
     void handleOpenCampaign(int campaignId);
     void handleReactivateWorld(int worldId);
     void handleCreateWorld();
+    void handleDeleteWorld(int worldId);
 
 private:
     void loadWorldsData();
