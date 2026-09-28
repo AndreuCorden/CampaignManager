@@ -1,7 +1,7 @@
 #include <QApplication>
 #include "MainWindow.h"
-#include "domain/AuthController.h"
-#include "domain/DashboardController.h"
+#include "domain/login/AuthController.h"
+#include "domain/dashboard/DashboardController.h"
 #include "database/DatabaseManager.h"
 
 int main(int argc, char *argv[])

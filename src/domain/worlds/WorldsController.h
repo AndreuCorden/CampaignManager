@@ -17,6 +17,7 @@ private slots:
     void handleOpenWorld(int worldId);
     void handleOpenCampaign(int campaignId);
     void handleReactivateWorld(int worldId);
+    void handleCreateWorld();
 
 private:
     void refreshData();

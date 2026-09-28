@@ -1,5 +1,5 @@
 #include "DashboardController.h"
-#include "WorldsController.h" // Only include the Controller!
+#include "domain/worlds/WorldsController.h"
 #include "display/dashboard/DashboardWindow.h"
 #include "database/DatabaseManager.h"
 #include <QDebug>
