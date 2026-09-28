@@ -154,16 +154,17 @@ QList<World> DatabaseManager::getWorldsForUser(int userId, bool isArchived) {
     return worlds;
 }
 
-bool DatabaseManager::createWorld(int userId, const QString &name, const QString &description) {
+int DatabaseManager::createWorld(int userId, const QString &name, const QString &description) {
     QSqlQuery query;
     query.prepare("INSERT INTO worlds (user_id, name, description) VALUES (:uid, :name, :desc)");
     query.bindValue(":uid", userId);
     query.bindValue(":name", name);
     query.bindValue(":desc", description);
 
-    if (!query.exec()) {
-        qDebug() << "Failed to create world:" << query.lastError().text();
-        return false;
+    if (query.exec()) {
+        return query.lastInsertId().toInt();
     }
-    return true;
+    
+    qDebug() << "Failed to create world:" << query.lastError().text();
+    return -1;
 }

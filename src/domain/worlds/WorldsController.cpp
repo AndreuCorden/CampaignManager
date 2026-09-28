@@ -51,10 +51,15 @@ void WorldsController::loadWorldsData() {
 void WorldsController::handleOpenWorld(int worldId)
 {
     QSqlQuery q;
-    q.prepare("UPDATE worlds SET last_opened = CURRENT_TIMESTAMP WHERE id = :id");
+    q.prepare("UPDATE worlds SET updated_at = CURRENT_TIMESTAMP WHERE id = :id");
     q.bindValue(":id", worldId);
     q.exec();
-    qDebug() << "Opening World ID:" << worldId;
+
+    // 1. Launch WorldController for the selected world
+    new WorldController(worldId, m_userId, m_username);
+
+    // 2. Close the current Worlds/Shelf window
+    m_window->close();
 }
 
 void WorldsController::handleOpenCampaign(int campaignId)
@@ -85,9 +90,13 @@ void WorldsController::handleCreateWorld() {
 
         if (name.isEmpty()) return;
 
-        // Delegate insertion to DatabaseManager
-        if (DatabaseManager::instance().createWorld(m_userId, name, desc)) {
-            loadWorldsData(); // Refresh list on success
+        // Create world and retrieve its database ID
+        int newWorldId = DatabaseManager::instance().createWorld(m_userId, name, desc);
+        
+        if (newWorldId != -1) {
+            // Immediately transition into the new world view
+            new WorldController(newWorldId, m_userId, m_username);
+            m_window->close();
         }
     }
 }

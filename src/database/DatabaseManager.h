@@ -20,7 +20,7 @@ public:
     int getCharacterCount(int userId);
 
     QList<World> getWorldsForUser(int userId, bool isArchived = false);
-    bool createWorld(int userId, const QString &name, const QString &description);
+    int createWorld(int userId, const QString &name, const QString &description);
 
 private:
     DatabaseManager() = default;
