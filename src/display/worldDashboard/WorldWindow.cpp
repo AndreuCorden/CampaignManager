@@ -11,7 +11,7 @@ WorldWindow::WorldWindow(const QString &username, QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
     showFullScreen();
 
-    // Central workspace
+    // Central workspace widget
     m_worldWidget = new WorldWidget(this);
     setCentralWidget(m_worldWidget);
 
@@ -19,22 +19,25 @@ WorldWindow::WorldWindow(const QString &username, QWidget *parent)
     QToolBar *topBar = addToolBar("Navigation");
     topBar->setMovable(false);
 
-    QPushButton *backBtn = new QPushButton("← Back to Worlds", this);
-    backBtn->setCursor(Qt::PointingHandCursor);
-    backBtn->setStyleSheet("margin-left: 8px; padding: 4px 12px;");
-    topBar->addWidget(backBtn);
+    // 1. User Label (Matches WorldsWindow positioning & gold styling)
+    QLabel *userLabel = new QLabel("User: " + username + "  ", this);
+    userLabel->setStyleSheet("color: #D4AF37; font-weight: bold; margin-right: 12px;");
+    topBar->addWidget(userLabel);
 
+    // 2. Active World Name Header
     m_titleLabel = new QLabel(" World Workspace", this);
-    m_titleLabel->setStyleSheet("font-weight: bold; margin-left: 16px; font-size: 14px;");
+    m_titleLabel->setStyleSheet("font-weight: bold; font-size: 14px; color: #E2E8F0; margin-left: 8px;");
     topBar->addWidget(m_titleLabel);
 
+    // 3. Spacer pushing controls to the far right
     QWidget *spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     topBar->addWidget(spacer);
 
-    QLabel *userLabel = new QLabel("Logged in as: " + username, this);
-    userLabel->setStyleSheet("margin-right: 12px;");
-    topBar->addWidget(userLabel);
+    // 4. Back Navigation Button
+    QPushButton *backBtn = new QPushButton("← Back to Worlds", this);
+    backBtn->setCursor(Qt::PointingHandCursor);
+    topBar->addWidget(backBtn);
 
     connect(backBtn, &QPushButton::clicked, this, &WorldWindow::backToWorldsRequested);
 }

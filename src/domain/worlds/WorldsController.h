@@ -20,7 +20,7 @@ private slots:
     void handleCreateWorld();
 
 private:
-    void refreshData();
+    void loadWorldsData();
 
     WorldsWindow *m_window;
     int m_userId;
