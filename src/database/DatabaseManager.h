@@ -21,6 +21,8 @@ public:
 
     QList<World> getWorldsForUser(int userId, bool isArchived = false);
     int createWorld(int userId, const QString &name, const QString &description);
+    bool setWorldArchived(int worldId, bool archived);
+    bool deleteWorld(int worldId);
 
 private:
     DatabaseManager() = default;

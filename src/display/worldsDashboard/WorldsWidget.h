@@ -22,9 +22,11 @@ public:
 signals:
     void backToDashboardRequested();
     void openWorldRequested(int worldId);
+    void archiveWorldRequested(int worldId);
     void openCampaignRequested(int campaignId);
     void reactivateWorldRequested(int worldId);
     void createWorldRequested();
+    void deleteWorldRequested(int worldId);
 
 private:
     QVBoxLayout *m_activeWorldsLayout;

@@ -1,8 +1,11 @@
 #include "WorldsWidget.h"
 #include "WorldCard.h"
+#include "WorldDropZone.h"
 #include <QLabel>
 #include <QScrollArea>
-#include <QFrame>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 WorldsWidget::WorldsWidget(QWidget *parent) : QWidget(parent) {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -50,14 +53,16 @@ WorldsWidget::WorldsWidget(QWidget *parent) : QWidget(parent) {
     contentLayout->setContentsMargins(0, 0, 16, 0);
     contentLayout->setSpacing(24);
 
-    // SECTION 1: Active Worlds
-    QLabel *activeWorldsHeader = new QLabel("Active Worlds (Most Recently Opened)", scrollContent);
+    // SECTION 1: Active Worlds (Drop Zone -> Reactivates/Unarchives dropped world)
+    QLabel *activeWorldsHeader = new QLabel("Active Worlds (Drag here to unarchive)", scrollContent);
     activeWorldsHeader->setStyleSheet("font-size: 16px; font-weight: bold; color: #E2E8F0;");
     contentLayout->addWidget(activeWorldsHeader);
 
-    m_activeWorldsLayout = new QVBoxLayout();
-    m_activeWorldsLayout->setSpacing(12);
-    contentLayout->addLayout(m_activeWorldsLayout);
+    WorldDropZone *activeDropZone = new WorldDropZone(scrollContent);
+    m_activeWorldsLayout = activeDropZone->contentLayout();
+    contentLayout->addWidget(activeDropZone);
+
+    connect(activeDropZone, &WorldDropZone::worldDropped, this, &WorldsWidget::reactivateWorldRequested);
 
     // SECTION 2: Active Campaigns
     QLabel *campaignsHeader = new QLabel("Recent Campaigns (Top 5 Active)", scrollContent);
@@ -68,16 +73,18 @@ WorldsWidget::WorldsWidget(QWidget *parent) : QWidget(parent) {
     m_campaignsLayout->setSpacing(12);
     contentLayout->addLayout(m_campaignsLayout);
 
-    // SECTION 3: Closed / Archived Worlds
-    QLabel *closedWorldsHeader = new QLabel("Archived Worlds", scrollContent);
+    // SECTION 3: Closed / Archived Worlds (Drop Zone -> Archives dropped world)
+    QLabel *closedWorldsHeader = new QLabel("Archived Worlds (Drag here to archive)", scrollContent);
     closedWorldsHeader->setStyleSheet("font-size: 16px; font-weight: bold; color: #A0AEC0;");
     contentLayout->addWidget(closedWorldsHeader);
 
-    m_closedWorldsLayout = new QVBoxLayout();
-    m_closedWorldsLayout->setSpacing(8);
-    contentLayout->addLayout(m_closedWorldsLayout);
+    WorldDropZone *archivedDropZone = new WorldDropZone(scrollContent);
+    m_closedWorldsLayout = archivedDropZone->contentLayout();
+    contentLayout->addWidget(archivedDropZone);
 
-    contentLayout->addStretch(); // Pushes elements up cleanly
+    connect(archivedDropZone, &WorldDropZone::worldDropped, this, &WorldsWidget::archiveWorldRequested);
+
+    contentLayout->addStretch();
 
     scrollArea->setWidget(scrollContent);
     mainLayout->addWidget(scrollArea);
@@ -97,14 +104,12 @@ void WorldsWidget::populateActiveWorlds(const QList<World> &worlds) {
     }
 
     for (const World &world : worlds) {
-        WorldCard *card = new WorldCard(
-            world.id(),
-            world.name(),
-            world.description(),
-            this
-        );
+        WorldCard *card = new WorldCard(world.id(), world.name(), world.description(), false, this);
 
         connect(card, &WorldCard::cardClicked, this, &WorldsWidget::openWorldRequested);
+        connect(card, &WorldCard::archiveRequested, this, &WorldsWidget::archiveWorldRequested);
+        connect(card, &WorldCard::deleteRequested, this, &WorldsWidget::deleteWorldRequested);
+
         m_activeWorldsLayout->addWidget(card);
     }
 }
@@ -117,21 +122,9 @@ void WorldsWidget::populateTopCampaigns(const QList<QPair<int, QString>> &campai
         btn->setMinimumHeight(80);
         btn->setCursor(Qt::PointingHandCursor);
         btn->setStyleSheet(
-            "QPushButton {"
-            "  padding: 12px;"
-            "  background-color: #1A202C;"
-            "  border: 1px solid #D4AF37;"
-            "  color: #D4AF37;"
-            "  border-radius: 6px;"
-            "}"
-            "QPushButton:hover {"
-            "  background-color: #2D3748;"
-            "  color: #ECC94B;"
-            "  border-color: #ECC94B;"
-            "}"
-            "QPushButton:pressed {"
-            "  background-color: #0F172A;"
-            "}"
+            "QPushButton { padding: 12px; background-color: #1A202C; border: 1px solid #D4AF37; color: #D4AF37; border-radius: 6px; }"
+            "QPushButton:hover { background-color: #2D3748; color: #ECC94B; border-color: #ECC94B; }"
+            "QPushButton:pressed { background-color: #0F172A; }"
         );
         connect(btn, &QPushButton::clicked, this, [this, campaignId]() { emit openCampaignRequested(campaignId); });
         m_campaignsLayout->addWidget(btn);
@@ -148,14 +141,12 @@ void WorldsWidget::populateClosedWorlds(const QList<World> &worlds) {
     }
 
     for (const World &world : worlds) {
-        WorldCard *card = new WorldCard(
-            world.id(),
-            world.name(),
-            world.description(),
-            this
-        );
+        WorldCard *card = new WorldCard(world.id(), world.name(), world.description(), true, this);
 
         connect(card, &WorldCard::cardClicked, this, &WorldsWidget::openWorldRequested);
+        connect(card, &WorldCard::archiveRequested, this, &WorldsWidget::reactivateWorldRequested);
+        connect(card, &WorldCard::deleteRequested, this, &WorldsWidget::deleteWorldRequested);
+
         m_closedWorldsLayout->addWidget(card);
     }
 }

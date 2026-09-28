@@ -168,3 +168,18 @@ int DatabaseManager::createWorld(int userId, const QString &name, const QString 
     qDebug() << "Failed to create world:" << query.lastError().text();
     return -1;
 }
+
+bool DatabaseManager::setWorldArchived(int worldId, bool archived) {
+    QSqlQuery query(m_db);
+    query.prepare("UPDATE worlds SET is_archived = :archived, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+    query.bindValue(":archived", archived ? 1 : 0);
+    query.bindValue(":id", worldId);
+    return query.exec();
+}
+
+bool DatabaseManager::deleteWorld(int worldId) {
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM worlds WHERE id = :id");
+    query.bindValue(":id", worldId);
+    return query.exec();
+}
