@@ -3,9 +3,10 @@
 
 #include <QWidget>
 
-class QTabWidget;
-class QLabel;
-class QTextEdit;
+class CampaignsTabWidget;
+class WikiTabWidget;
+class MapsTabWidget;
+class TimelineTabWidget;
 
 class WorldWidget : public QWidget {
     Q_OBJECT
@@ -15,14 +16,16 @@ public:
 
     void setWorldDetails(const QString &name, const QString &description);
 
-private:
-    void setupWikiTab(QTabWidget *tabs);
-    void setupTimelineTab(QTabWidget *tabs);
-    void setupMapsTab(QTabWidget *tabs);
-    void setupCampaignsTab(QTabWidget *tabs);
+    CampaignsTabWidget* campaignsTab() const { return m_campaignsTab; }
+    WikiTabWidget* wikiTab() const { return m_wikiTab; }
+    MapsTabWidget* mapsTab() const { return m_mapsTab; }
+    TimelineTabWidget* timelineTab() const { return m_timelineTab; }
 
-    QLabel *m_worldTitleLabel = nullptr;
-    QTextEdit *m_worldDescEdit = nullptr;
+private:
+    CampaignsTabWidget *m_campaignsTab;
+    WikiTabWidget *m_wikiTab;
+    MapsTabWidget *m_mapsTab;
+    TimelineTabWidget *m_timelineTab;
 };
 
 #endif // WORLDWIDGET_H

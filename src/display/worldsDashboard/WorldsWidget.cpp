@@ -1,6 +1,6 @@
 #include "WorldsWidget.h"
-#include "WorldCard.h"
-#include "WorldDropZone.h"
+#include "cards-dropzone/WorldCard.h"
+#include "cards-dropzone/WorldDropZone.h"
 #include <QLabel>
 #include <QScrollArea>
 #include <QPushButton>
